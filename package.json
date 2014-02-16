@@ -1,0 +1,53 @@
+{
+  "name": "node-glu",
+  "version": "0.0.1",
+  "description": "A NodeJS wrapper around GLU library",
+  "main": "index.js",
+  "author": {
+    "name": "Dimitri Giardina",
+    "email": "dimitri.giardina@gmail.com"
+  },
+  "keywords": [
+    "glfw",
+    "opengl",
+    "3d",
+    "graphics"
+  ],
+  "maintainers": [
+    {
+      "name": "Dimitri Giardina",
+      "email": "dimitri.giardina@gmail.com"
+    }
+  ],
+  "licenses": [
+    {
+      "type": "BSD",
+      "url": "http://github.com/dg14/node-glu/raw/master/LICENSES"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/dg14/node-glu"
+  },
+  "directories": {
+    "src": "src",
+    "lib": "lib",
+    "test": "test"
+  },
+  "engines": {
+    "node": "0.6.5-0.11.3"
+  },
+  "scripts": {
+    "install": "node-gyp rebuild"
+  },
+  "dependencies": {},
+  "gypfile": true,
+  "readme": "NodeJS bindings to GLU",
+  "readmeFilename": "README.md",
+  "_id": "node-glu@0.0.1",
+  "dist": {
+    "shasum": "b75e792f8714f839a9151fbfe460076cb1209bd4"
+  },
+  "_from": "node-glu@0.0.1",
+  "_resolved": "https://registry.npmjs.org/node-glfw/-/node-glfw-0.1.3.tgz"
+}

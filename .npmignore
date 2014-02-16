@@ -1,0 +1,9 @@
+node_glu.node
+.cproject,.project
+.cproject
+.project
+.lock-wscript
+build
+.DS_Store
+Debug
+node-glu.iml
