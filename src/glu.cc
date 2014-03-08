@@ -12,6 +12,19 @@ using namespace std;
 
 namespace glu {
 
+    inline void *getImageData(Local<Value> arg) {
+        void *pixels = NULL;
+        if (!arg->IsNull()) {
+            Local<Object> obj = Local<Object>::Cast(arg);
+            if (!obj->IsObject())
+                ThrowException(JS_STR("Bad texture argument"));
+
+            pixels = obj->GetIndexedPropertiesExternalArrayData();
+        }
+        return pixels;
+    }
+
+
     /* GLFW initialization, termination and version querying */
 
     JS_METHOD(Init) {
@@ -200,6 +213,23 @@ namespace glu {
         return scope.Close(Undefined());
     }
 
+    JS_METHOD(build2DMipmaps) {
+        HandleScope scope;
+
+        int target = args[0]->Int32Value();
+        int internalformat = args[1]->Int32Value();
+        int width = args[2]->Int32Value();
+        int height = args[3]->Int32Value();
+        int format = args[4]->Int32Value();
+        int type = args[5]->Int32Value();
+        void *pixels = getImageData(args[6]);
+
+        gluBuild2DMipmaps(target, internalformat, width, height, format, type, pixels);
+
+        return scope.Close(Undefined());
+    }
+
+
     // make sure we close everything when we exit
     void AtExit() {
     }
@@ -249,6 +279,7 @@ extern "C" {
         JS_GLU_SET_METHOD(ortho2D);
         JS_GLU_SET_METHOD(perspective);
         JS_GLU_SET_METHOD(lookAt);
+        JS_GLU_SET_METHOD(build2DMipmaps);
 
         /*************************************************************************
          * GLFW version
