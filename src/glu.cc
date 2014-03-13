@@ -211,7 +211,7 @@ namespace glu {
         GLint slices = (GLint) args[3]->Int32Value();
         GLint loops = (GLint) args[4]->Int32Value();
         GLdouble start = (GLdouble) args[5]->NumberValue();
-        GLdouble sweep = (GLdouble) args[2]->NumberValue();
+        GLdouble sweep = (GLdouble) args[6]->NumberValue();
         gluPartialDisk(quad, inner, outer, slices, loops, start, sweep);
         return scope.Close(Undefined());
     }
@@ -300,6 +300,23 @@ namespace glu {
         gluQuadricTexture(quadric, flag);
         return scope.Close(Undefined());
     }
+
+    JS_METHOD(quadricOrientation) {
+        HandleScope scope;
+        GLUquadric *quadric = (GLUquadric *)wrap2obj("GLUquadric", args[0]);
+        GLenum orientation = args[1]->Int32Value();
+        gluQuadricOrientation(quadric, orientation);
+        return scope.Close(Undefined());
+    }
+
+    JS_METHOD(quadricDrawStyle) {
+        HandleScope scope;
+        GLUquadric *quadric = (GLUquadric *)wrap2obj("GLUquadric", args[0]);
+        GLenum draw = args[1]->Int32Value();
+        gluQuadricDrawStyle(quadric, draw);
+        return scope.Close(Undefined());
+    }
+
     struct GLUObj {
         GLUObjectType type;
         void *obj;
@@ -442,6 +459,8 @@ extern "C" {
 
         JS_GLU_SET_METHOD(quadricNormals);
         JS_GLU_SET_METHOD(quadricTexture);
+        JS_GLU_SET_METHOD(quadricOrientation);
+        JS_GLU_SET_METHOD(quadricDrawStyle);
 
         /*************************************************************************
          * GLFW version
