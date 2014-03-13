@@ -51,18 +51,18 @@ namespace glu {
         return obj;
     }
     inline void *wrap2obj(const char *name, Local<Value> arg) {
-    	if (arg->IsObject()) {
-    		Local<Object> obj=arg->ToObject();
-    		Local<External> wrap=Local<External>::Cast(obj->GetInternalField(0));
-    		void *ptr=wrap->Value();    		
-#if LOGGING            
-    		cout << ptr<<"\n";
-#endif             
-    		return ptr;
-    	} else {
-    		ThrowException(JS_STR("Not an object"));
-    		return NULL;
-    	}
+        if (arg->IsObject()) {
+            Local<Object> obj = arg->ToObject();
+            Local<External> wrap = Local<External>::Cast(obj->GetInternalField(0));
+            void *ptr = wrap->Value();
+#if LOGGING
+            cout << ptr << "\n";
+#endif
+            return ptr;
+        } else {
+            ThrowException(JS_STR("Not an object"));
+            return NULL;
+        }
     }
 
 
@@ -73,13 +73,26 @@ namespace glu {
         return scope.Close(Undefined());
     }
 
+    JS_METHOD(checkExtension) {
+        HandleScope scope;
+        String::Utf8Value name(args[0]);
+        String::Utf8Value string(args[1]);
+        return scope.Close(Boolean::New(gluCheckExtension((GLubyte *)*name, (GLubyte *)*string)));
+    }
+
+    JS_METHOD(getString) {
+        HandleScope scope;
+        GLenum name = args[0]->Int32Value();
+        return scope.Close(String::New((char *)gluGetString(name)));
+    }
+
     JS_METHOD(createNurbsRenderer) {
         HandleScope scope;
         GLUnurbs *nurbsRenderer = gluNewNurbsRenderer();
 #ifdef LOGGING
         cout << "create nurbs renderer " << nurbsRenderer << endl;
 #endif
-        registerGLUObj(GLUOBJECT_TYPE_NURBSRENDERER,nurbsRenderer);
+        registerGLUObj(GLUOBJECT_TYPE_NURBSRENDERER, nurbsRenderer);
         return scope.Close(obj2wrap("GLUnurbs", nurbsRenderer));
     }
 
@@ -89,7 +102,7 @@ namespace glu {
 #ifdef LOGGING
         cout << "create quadrics  " << quadrics << endl;
 #endif
-        registerGLUObj(GLUOBJECT_TYPE_QUADRICS,quadrics);
+        registerGLUObj(GLUOBJECT_TYPE_QUADRICS, quadrics);
         return scope.Close(obj2wrap("GLUquadric", quadrics));
     }
 
@@ -99,7 +112,7 @@ namespace glu {
 #ifdef LOGGING
         cout << "create tess  " << tess << endl;
 #endif
-        registerGLUObj(GLUOBJECT_TYPE_TESS,tess);
+        registerGLUObj(GLUOBJECT_TYPE_TESS, tess);
         return scope.Close(obj2wrap("GLUtesselator", tess));
     }
 
@@ -156,27 +169,6 @@ namespace glu {
         HandleScope scope;
         GLUnurbs *ptr = (GLUnurbs *)wrap2obj("GLUnurbs", args[0]);
         gluEndTrim(ptr);
-        return scope.Close(Undefined());
-    }
-
-    JS_METHOD(deleteNurbsRenderer) {
-        HandleScope scope;
-        GLUnurbs *ptr = (GLUnurbs *)wrap2obj("GLUnurbs", args[0]);
-        gluDeleteNurbsRenderer(ptr);
-        return scope.Close(Undefined());
-    }
-
-    JS_METHOD(deleteQuadric) {
-        HandleScope scope;
-        GLUquadric *ptr = (GLUquadric *)wrap2obj("GLUquadric", args[0]);
-        gluDeleteQuadric(ptr);
-        return scope.Close(Undefined());
-    }
-
-    JS_METHOD(deleteTess) {
-        HandleScope scope;
-        GLUtesselator *ptr = (GLUtesselator *)wrap2obj("GLUtesselator", args[0]);
-        gluDeleteTess(ptr);
         return scope.Close(Undefined());
     }
 
@@ -317,6 +309,16 @@ namespace glu {
         return scope.Close(Undefined());
     }
 
+    JS_METHOD(tessNormal) {
+        HandleScope scope;
+        GLUtesselator *tess = (GLUtesselator *)wrap2obj("GLUtesselator", args[0]);
+        GLdouble valueX = args[1]->NumberValue();
+        GLdouble valueY = args[2]->NumberValue();
+        GLdouble valueZ = args[3]->NumberValue();
+        gluTessNormal(tess, valueX, valueY, valueZ);
+        return scope.Close(Undefined());
+    }
+
     struct GLUObj {
         GLUObjectType type;
         void *obj;
@@ -429,6 +431,9 @@ extern "C" {
         /* GLFW initialization, termination and version querying */
         JS_GLU_SET_METHOD(Init);
 
+        JS_GLU_SET_METHOD(checkExtension);
+        JS_GLU_SET_METHOD(getString);
+
         JS_GLU_SET_METHOD(createNurbsRenderer);
         JS_GLU_SET_METHOD(createQuadric);
         JS_GLU_SET_METHOD(createTess);
@@ -442,10 +447,6 @@ extern "C" {
         JS_GLU_SET_METHOD(endPolygon);
         JS_GLU_SET_METHOD(endSurface);
         JS_GLU_SET_METHOD(endTrim);
-
-        JS_GLU_SET_METHOD(deleteNurbsRenderer);
-        JS_GLU_SET_METHOD(deleteQuadric);
-        JS_GLU_SET_METHOD(deleteTess);
 
         JS_GLU_SET_METHOD(cylinder);
         JS_GLU_SET_METHOD(disk);
@@ -461,6 +462,8 @@ extern "C" {
         JS_GLU_SET_METHOD(quadricTexture);
         JS_GLU_SET_METHOD(quadricOrientation);
         JS_GLU_SET_METHOD(quadricDrawStyle);
+
+        JS_GLU_SET_METHOD(tessNormal);
 
         /*************************************************************************
          * GLFW version
